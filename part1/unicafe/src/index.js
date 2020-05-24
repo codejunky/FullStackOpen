@@ -16,15 +16,23 @@ const FeedBackInput = ({ handlers }) => (
   </>
 )
 
-const FeedBackStats = ({ stats }) => (
-  <>
-    <h2>statistics</h2>
-    good {stats.good}  <br />
-    neutral {stats.neutral} <br />
-    bad {stats.bad}
-  </>
-)
+const FeedBackStats = ({ stats: { good, bad, neutral } }) => {
+  const totalScore = good + bad + neutral
+  const average = totalScore > 0 ? (good - bad) / totalScore : 0
+  const positive = totalScore > 0 ? good / totalScore * 100: 0
 
+  return (
+    <>
+      <h2>statistics</h2>
+      good {good}  <br />
+      neutral {neutral} <br />
+      bad {bad} <br />
+      all { totalScore } <br />
+      average { average } <br />
+      positive { positive }% <br />
+    </>
+  )
+}
 const App = () => {
   // save clicks of each button to own state
   const [good, setGood] = useState(0)
