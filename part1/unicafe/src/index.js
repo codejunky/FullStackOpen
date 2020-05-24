@@ -16,7 +16,7 @@ const FeedBackInput = ({ handlers }) => (
   </>
 )
 
-const FeedBackStats = ({ stats: { good, bad, neutral } }) => {
+const Statistics = ({ stats: { good, bad, neutral } }) => {
   const totalScore = good + bad + neutral
   const average = totalScore > 0 ? (good - bad) / totalScore : 0
   const positive = totalScore > 0 ? good / totalScore * 100: 0
@@ -52,7 +52,7 @@ const App = () => {
           badFeedBackHandler
         }}
       />
-      <FeedBackStats stats={{ good, neutral, bad }} />
+      <Statistics stats={{ good, neutral, bad }} />
     </div>
   )
 }
