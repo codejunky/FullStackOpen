@@ -18,19 +18,26 @@ const FeedBackInput = ({ handlers }) => (
 
 const Statistics = ({ stats: { good, bad, neutral } }) => {
   const totalScore = good + bad + neutral
-  const average = totalScore > 0 ? (good - bad) / totalScore : 0
-  const positive = totalScore > 0 ? good / totalScore * 100: 0
+
+  if (totalScore > 0) {
+    const average = (good - bad) / totalScore
+    const positive = good / totalScore * 100
+  
+    return (
+      <>
+        <h2>statistics</h2>
+        good {good}  <br />
+        neutral {neutral} <br />
+        bad {bad} <br />
+        all { totalScore } <br />
+        average { average } <br />
+        positive { positive }% <br />
+      </>
+    )
+  }
 
   return (
-    <>
-      <h2>statistics</h2>
-      good {good}  <br />
-      neutral {neutral} <br />
-      bad {bad} <br />
-      all { totalScore } <br />
-      average { average } <br />
-      positive { positive }% <br />
-    </>
+    <p>No feedback given</p>
   )
 }
 const App = () => {
