@@ -17,9 +17,14 @@ const FeedBackInput = ({ handlers }) => (
 )
 
 const Statistic = ({ text, value, percentage }) => (
-  <>
-    {text} {value}{percentage ? "%": ""} <br />
-  </>
+  <tr>
+    <td>
+      {text}
+    </td>
+    <td>
+      {value}{percentage ? "%": ""}
+    </td>
+  </tr>
 )
 
 const Statistics = ({ stats: { good, bad, neutral } }) => {
@@ -32,12 +37,16 @@ const Statistics = ({ stats: { good, bad, neutral } }) => {
     return (
       <>
         <h2>statistics</h2>
-        <Statistic text="good" value={good} />
-        <Statistic text="neutral" value={neutral} />
-        <Statistic text="bad" value={bad} />
-        <Statistic text="all" value={totalScore} />
-        <Statistic text="average" value={average} />
-        <Statistic text="positive" value={positive} percentage />
+        <table>
+          <tbody>
+            <Statistic text="good" value={good} />
+            <Statistic text="neutral" value={neutral} />
+            <Statistic text="bad" value={bad} />
+            <Statistic text="all" value={totalScore} />
+            <Statistic text="average" value={average} />
+            <Statistic text="positive" value={positive} percentage />
+          </tbody>
+        </table>
       </>
     )
   }
