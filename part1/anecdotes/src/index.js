@@ -16,8 +16,11 @@ const App = (props) => {
     setAndecdoteVotes(votes)
   } 
 
+  const popularAnecdote = anecdoteVotes.findIndex(el => el === Math.max(...anecdoteVotes))
+
   return (
     <div>
+      <h2>Anecdote of the day</h2>
       {props.anecdotes[selected]} <br />
       has {anecdoteVotes[selected]} vote{anecdoteVotes[selected] > 1 ? "s" : ""} <br />
       <button onClick={() => handleVoteClick(selected)}>
@@ -26,6 +29,10 @@ const App = (props) => {
       <button onClick={selectRandomAnecdote}>
         next anecdote
       </button>
+
+      <h2>Anecdote with most votes</h2>
+      {anecdotes[popularAnecdote]} <br />
+      has {anecdoteVotes[popularAnecdote]} vote{anecdoteVotes[popularAnecdote] > 1 ? "s" : ""} <br />
     </div>
   )
 }
