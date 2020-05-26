@@ -1,5 +1,7 @@
 import React, {useState} from 'react'
 
+import WeatherReport from './WeatherReport'
+
 const SearchResults = ({ data }) => {
     const [countryToShow, setCountryToShow] = useState([])
 
@@ -27,7 +29,7 @@ const SearchResults = ({ data }) => {
             <div>capital {capital}</div>
             <div>population {population}</div>
 
-            <h3>Languages</h3>
+            <h3>Spoken Languages</h3>
             <ul>
                 {languages.map(lang => <li key={lang.iso639_1}>{lang.name}</li>)}
             </ul>
@@ -40,6 +42,8 @@ const SearchResults = ({ data }) => {
                     alt={`${name}'s flag`}
                 />
             </div>
+
+            <WeatherReport city={capital} />
         </div>
     )
 }
