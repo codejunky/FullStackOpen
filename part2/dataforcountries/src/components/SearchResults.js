@@ -1,13 +1,26 @@
-import React from 'react'
+import React, {useState} from 'react'
 
 const SearchResults = ({ data }) => {
-    if (data.length > 1) {
-        return data.map(({ name }) => <div key={name}>{name}</div>)
+    const [countryToShow, setCountryToShow] = useState([])
+
+    const handleBtnClick = name => {
+        const country = data.filter(obj => obj.name === name)
+        setCountryToShow(country)
+    }
+
+    if (data.length > 1 && !countryToShow.length) {
+        return data.map(({ name }) => (
+            <div key={name}>
+                {name} <button onClick={() => handleBtnClick(name)}>show</button>
+            </div>
+        ))
     } else if (data.length === 0) {
         return (<div></div>)
     }
 
-    const { name, capital, population, languages, flag } = data[0]
+    const countryData = countryToShow.length ? countryToShow[0] : data[0]
+
+    const { name, capital, population, languages, flag } = countryData
     return (
         <div>
             <h2>{name}</h2>
