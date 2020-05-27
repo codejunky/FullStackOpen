@@ -3,6 +3,7 @@ import React, { useState, useEffect } from 'react'
 import Filter from './components/Filter'
 import PersonForm from './components/PersonForm'
 import Persons from './components/Persons'
+import Notification from './components/Notification'
 
 import peopleService from './services/persons' 
 
@@ -11,6 +12,7 @@ const App = () => {
   const [ newName, setNewName ] = useState('')
   const [ newNumber, setNewNumber ] = useState('')
   const [searchFilter, setSearchFilter] = useState('')
+  const [notificationMessage, setNotificationMessage] = useState({message: null, className: null})
   
 
   useEffect(() => {
@@ -31,6 +33,15 @@ const App = () => {
     setNewNumber(number)
   }
 
+  const setNotification = (message, type) => {
+    setNotificationMessage({
+      message,
+      className: type === 'success' ? 'success' : 'error'
+    })
+
+    setTimeout(() => setNotificationMessage({message: null, className: null}), 5000)
+  }
+
   const handleOnSubmit = (name, number) => {
     const person = persons.find(p => p.name === name)
     const nameExists = !!person
@@ -39,14 +50,18 @@ const App = () => {
       if (window.confirm(`${name} is already added to phonebook, replace the old number with a new one?`)) {
         peopleService
           .updatePerson(person.id, {name, number})
-          .then(data => setPersons(
-            persons.map(p => p.name === name ? data : p)
-          ))
+          .then(data => {
+            setPersons(persons.map(p => p.name === name ? data : p))
+            setNotification(`Updated ${name}`, 'success')
+          })
       }
     } else {
       peopleService
         .addPerson({name, number})
-        .then(data => setPersons([...persons, data]))
+        .then(data => {
+          setPersons([...persons, data])
+          setNotification(`Added ${name}`, 'success')
+        })
     }
 
     setNewName("")
@@ -77,6 +92,8 @@ const App = () => {
   return (
     <div>
       <h2>Phonebook</h2>
+
+      <Notification data={notificationMessage} />
 
       <Filter 
         searchFilter={searchFilter}
