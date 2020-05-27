@@ -36,9 +36,13 @@ const App = () => {
     if (nameExists) {
       alert(`${newName} is already added to phonebook`)
     } else {
-      setPersons([...persons, { name, number }])
-      setNewName("")
-      setNewNumber("")
+      axios
+        .post("http://localhost:3001/persons", { name, number })
+        .then(({ data }) => {
+          setPersons([...persons, data])
+          setNewName("")
+          setNewNumber("")
+        })
     }
   }
 
