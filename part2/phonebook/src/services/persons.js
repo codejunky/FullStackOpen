@@ -8,13 +8,16 @@ const getAll = () => {
         .then(({data}) => data)
 }
 
-const addPerson = (data) => {
+const addPerson = data => {
     return axios
         .post(`${BASE_URL}/persons`, data)
         .then(({ data }) => data)
 }
 
+const deletePerson = id => axios.delete(`${BASE_URL}/persons/${id}`)
+
 export default {
     getAll,
-    addPerson
+    addPerson,
+    deletePerson
 }
