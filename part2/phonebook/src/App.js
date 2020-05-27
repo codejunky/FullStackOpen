@@ -32,19 +32,25 @@ const App = () => {
   }
 
   const handleOnSubmit = (name, number) => {
-    const nameExists = persons.find(person => person.name === name)
+    const person = persons.find(p => p.name === name)
+    const nameExists = !!person
 
     if (nameExists) {
-      alert(`${newName} is already added to phonebook`)
+      if (window.confirm(`${name} is already added to phonebook, replace the old number with a new one?`)) {
+        peopleService
+          .updatePerson(person.id, {name, number})
+          .then(data => setPersons(
+            persons.map(p => p.name === name ? data : p)
+          ))
+      }
     } else {
       peopleService
         .addPerson({name, number})
-        .then(data => {
-          setPersons([...persons, data])
-          setNewName("")
-          setNewNumber("")
-        })
+        .then(data => setPersons([...persons, data]))
     }
+
+    setNewName("")
+    setNewNumber("")
   }
 
   const handleDeletePerson = id => {

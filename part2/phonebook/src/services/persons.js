@@ -14,10 +14,17 @@ const addPerson = data => {
         .then(({ data }) => data)
 }
 
+const updatePerson = (id, newData) => (
+    axios
+        .put(`${BASE_URL}/persons/${id}`, newData)
+        .then(({ data }) => data)
+)
+
 const deletePerson = id => axios.delete(`${BASE_URL}/persons/${id}`)
 
 export default {
     getAll,
     addPerson,
-    deletePerson
+    deletePerson,
+    updatePerson
 }
