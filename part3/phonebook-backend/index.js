@@ -52,11 +52,22 @@ app.get("/api/persons/:id", (req, res) => {
 
 app.post("/api/persons", (req, res) => {
     const person = req.body
+    const nameExists = people.find(p => p.name === person.name)
     person.id = Math.floor(Math.random(1000) * 1000)
+
+    if (!person.name || !person.number) {
+        return res.status(400).json({
+            error: "Must provide name and number."
+        })
+    } else if (nameExists) {
+        return res.status(400).json({
+            error: "name must be unique."
+        })
+    }
     
     people = people.concat(person)
 
-    res.json(person)
+    res.status(201).json(person)
 })
 
 app.delete("/api/persons/:id", (req, res) => {
