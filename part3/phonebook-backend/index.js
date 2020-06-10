@@ -1,6 +1,9 @@
 const express = require("express")
 const morgan = require("morgan")
 const cors = require("cors")
+require('dotenv').config()
+
+const Person = require('./models/person');
 
 const app = express()
 
@@ -51,38 +54,38 @@ app.get("/info", (req, res) => {
 })
 
 app.get("/api/persons", (req, res) => {
-    res.json(people)
+    Person.find({})
+        .then(people => {
+            res.json(people)
+        })
 })
 
 app.get("/api/persons/:id", (req, res) => {
-    const id = parseInt(req.params.id)
-    const entry = people.find(p => p.id === id)
-
-    if (!entry) {
-        return res.status(404).end()
-    }
-
-    res.json(entry)
+    Person.findById(req.params.id)
+        .then(person => {
+            res.json(person)
+        })
 })
 
 app.post("/api/persons", (req, res) => {
-    const person = req.body
-    const nameExists = people.find(p => p.name === person.name)
-    person.id = Math.floor(Math.random(1000) * 1000)
+    const { name, number } = req.body
 
-    if (!person.name || !person.number) {
+    if (!name || !number) {
         return res.status(400).json({
             error: "Must provide name and number."
         })
-    } else if (nameExists) {
-        return res.status(400).json({
-            error: "name must be unique."
-        })
     }
 
-    people = people.concat(person)
+    const person = new Person({
+        name,
+        number
+    })
 
-    res.status(201).json(person)
+    person.save()
+        .then(savedPerson => {
+            res.status(201).json(savedPerson)
+        })
+
 })
 
 app.delete("/api/persons/:id", (req, res) => {
@@ -92,7 +95,7 @@ app.delete("/api/persons/:id", (req, res) => {
     res.status(204).end()
 })
 
-const PORT = process.env.PORT || 3001
+const PORT = process.env.PORT
 app.listen(PORT, () => {
     console.log(`Server running on http://localhost:${PORT}`)
 })
