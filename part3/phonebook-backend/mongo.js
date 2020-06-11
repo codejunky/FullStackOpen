@@ -27,7 +27,7 @@ if (process.argv.length > 3) {
     })
 
     person.save()
-        .then(res => {
+        .then(() => {
             console.log('New phone number successfully saved to DB!')
             mongoose.connection.close()
         })
@@ -36,7 +36,7 @@ if (process.argv.length > 3) {
     Person.find({})
         .then(people => {
             people.forEach(({ name, number }) => {
-                console.log("Phonebook:")
+                console.log('Phonebook:')
                 console.log(`${name} ${number}`)
             })
 

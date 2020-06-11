@@ -1,9 +1,9 @@
-const express = require("express")
-const morgan = require("morgan")
-const cors = require("cors")
+const express = require('express')
+const morgan = require('morgan')
+const cors = require('cors')
 require('dotenv').config()
 
-const Person = require('./models/person');
+const Person = require('./models/person')
 
 const app = express()
 
@@ -21,30 +21,7 @@ app.use(morgan((tokens, req, res) => {
     ].join(' ')
 }))
 
-let people = [
-    {
-        name: "Arto Hellas",
-        number: "040-123456",
-        id: 1
-    },
-    {
-        name: "Ada Lovelace",
-        number: "39-44-5323523",
-        id: 2
-    },
-    {
-        name: "Dan Abramov",
-        number: "12-43-234345",
-        id: 3
-    },
-    {
-        name: "Mary Poppendieck",
-        number: "39-23-6423122",
-        id: 4
-    }
-]
-
-app.get("/info", (req, res, next) => {
+app.get('/info', (req, res, next) => {
     Person.find({})
         .then(people => {
             const message = `
@@ -57,14 +34,14 @@ app.get("/info", (req, res, next) => {
         .catch(error => next(error))
 })
 
-app.get("/api/persons", (req, res) => {
+app.get('/api/persons', (req, res) => {
     Person.find({})
         .then(people => {
             res.json(people)
         })
 })
 
-app.get("/api/persons/:id", (req, res, next) => {
+app.get('/api/persons/:id', (req, res, next) => {
     Person.findById(req.params.id)
         .then(person => {
             if (person) {
@@ -76,7 +53,7 @@ app.get("/api/persons/:id", (req, res, next) => {
         .catch(error => next(error))
 })
 
-app.post("/api/persons", (req, res, next) => {
+app.post('/api/persons', (req, res, next) => {
     const { name, number } = req.body
 
     const person = new Person({
@@ -92,7 +69,7 @@ app.post("/api/persons", (req, res, next) => {
 
 })
 
-app.put("/api/persons/:id", (req, res, next) => {
+app.put('/api/persons/:id', (req, res, next) => {
     const { name, number } = req.body
 
     Person.findByIdAndUpdate(req.params.id, { name, number }, { new: true })
@@ -102,9 +79,9 @@ app.put("/api/persons/:id", (req, res, next) => {
         .catch(error => next(error))
 })
 
-app.delete("/api/persons/:id", (req, res, next) => {
+app.delete('/api/persons/:id', (req, res, next) => {
     Person.findByIdAndRemove(req.params.id)
-        .then(result => {
+        .then(() => {
             res.status(204).end()
         })
         .catch(error => next(error))
@@ -121,7 +98,7 @@ const errorHandler = (error, req, res, next) => {
     console.log(error.message)
 
     if (error.name === 'CastError') {
-        return res.status(400).send({ error: "malformatted id" })
+        return res.status(400).send({ error: 'malformatted id' })
     } else if (error.name === 'ValidationError') {
         return res.status(400).send({ error: error.message })
     }
