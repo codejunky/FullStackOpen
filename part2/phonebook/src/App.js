@@ -5,15 +5,15 @@ import PersonForm from './components/PersonForm'
 import Persons from './components/Persons'
 import Notification from './components/Notification'
 
-import peopleService from './services/persons' 
+import peopleService from './services/persons'
 
 const App = () => {
-  const [ persons, setPersons ] = useState([]) 
-  const [ newName, setNewName ] = useState('')
-  const [ newNumber, setNewNumber ] = useState('')
+  const [persons, setPersons] = useState([])
+  const [newName, setNewName] = useState('')
+  const [newNumber, setNewNumber] = useState('')
   const [searchFilter, setSearchFilter] = useState('')
-  const [notificationMessage, setNotificationMessage] = useState({message: null, className: null})
-  
+  const [notificationMessage, setNotificationMessage] = useState({ message: null, className: null })
+
 
   useEffect(() => {
     peopleService
@@ -39,7 +39,7 @@ const App = () => {
       className: type === 'success' ? 'success' : 'error'
     })
 
-    setTimeout(() => setNotificationMessage({message: null, className: null}), 5000)
+    setTimeout(() => setNotificationMessage({ message: null, className: null }), 5000)
   }
 
   const handleOnSubmit = (name, number) => {
@@ -49,7 +49,7 @@ const App = () => {
     if (nameExists) {
       if (window.confirm(`${name} is already added to phonebook, replace the old number with a new one?`)) {
         peopleService
-          .updatePerson(person.id, {name, number})
+          .updatePerson(person.id, { name, number })
           .then(data => {
             setPersons(persons.map(p => p.name === name ? data : p))
             setNotification(`Updated ${name}`, 'success')
@@ -57,11 +57,12 @@ const App = () => {
       }
     } else {
       peopleService
-        .addPerson({name, number})
+        .addPerson({ name, number })
         .then(data => {
           setPersons([...persons, data])
           setNotification(`Added ${name}`, 'success')
         })
+        .catch(({ response: { data } }) => setNotification(data.error, 'error'))
     }
 
     setNewName("")
@@ -72,7 +73,7 @@ const App = () => {
     const person = persons.find(p => p.id === id)
 
     if (window.confirm(`Delete ${person.name} ?`)) {
-      peopleService 
+      peopleService
         .deletePerson(id)
         .then(() => {
           setPersons(persons.filter(p => p.id !== id))
@@ -89,27 +90,27 @@ const App = () => {
 
   const handleNameFilterChange = event => {
     const filter = event.target.value
-    
+
     setSearchFilter(filter)
   }
 
-  const filteredPersons = 
+  const filteredPersons =
     searchFilter ? persons.filter(({ name }) => name.toLowerCase().includes(searchFilter.toLowerCase())) : persons
- 
+
   return (
     <div>
       <h2>Phonebook</h2>
 
       <Notification data={notificationMessage} />
 
-      <Filter 
+      <Filter
         searchFilter={searchFilter}
         handleOnChange={handleNameFilterChange}
       />
 
       <h2>Add a new</h2>
 
-      <PersonForm  
+      <PersonForm
         newName={newName}
         newNumber={newNumber}
         handleNameChange={handleNameChange}
@@ -118,7 +119,7 @@ const App = () => {
       />
 
       <h2>Numbers</h2>
-      
+
       <Persons people={filteredPersons} handleDeleteBtn={handleDeletePerson} />
     </div>
   )
