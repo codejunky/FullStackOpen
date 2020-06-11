@@ -44,13 +44,17 @@ let people = [
     }
 ]
 
-app.get("/info", (req, res) => {
-    const message = `
-        <p>Phonebook has info for ${people.length} people</p>
-        <p>${new Date().toString()}</p>
-    `
+app.get("/info", (req, res, next) => {
+    Person.find({})
+        .then(people => {
+            const message = `
+                <p>Phonebook has info for ${people.length} people</p>
+                <p>${new Date().toString()}</p>
+            `
 
-    res.send(message)
+            return res.send(message)
+        })
+        .catch(error => next(error))
 })
 
 app.get("/api/persons", (req, res) => {
