@@ -19,22 +19,46 @@ const favoriteBlog = blogs => {
 }
 
 const mostBlogs = blogs => {
-    const authorBlogCounts = _.countBy(blogs, blog => blog.author)
-    return _.reduce(authorBlogCounts, (author, count, name) => {
-        if (count > author['blogs'] || _.isEmpty(author)) {
-            author = {
-                author: name,
-                blogs: count
+    return _
+        .chain(blogs)
+        .countBy(blog => blog.author)
+        .reduce((author, count, name) => {
+            if (count > author['blogs'] || _.isEmpty(author)) {
+                author = {
+                    author: name,
+                    blogs: count
+                }
             }
-        }
 
-        return author
-    }, {})
+            return author
+        }, {})
+        .value()
+}
+
+const mostLikes = blogs => {
+    return _
+        .chain(blogs)
+        .groupBy(blog => blog.author)
+        .mapValues(blogsArr => {
+            return _.reduce(blogsArr, (likesCount, blog) => likesCount + blog.likes, 0)
+        })
+        .reduce((authorLikes, count, name) => {
+            if (count > authorLikes['likes'] || _.isEmpty(authorLikes)) {
+                authorLikes = {
+                    author: name,
+                    likes: count
+                }
+            }
+
+            return authorLikes
+        }, {})
+        .value()
 }
 
 module.exports = {
     dummy,
     totalLikes,
     favoriteBlog,
-    mostBlogs
+    mostBlogs,
+    mostLikes
 }
