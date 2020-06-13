@@ -52,6 +52,22 @@ describe('blogs api', () => {
 
     })
 
+    test('number of likes is set to 0 if not provided', async () => {
+        const newBlog = {
+            title: 'How to become a web developer in 2020',
+            author: 'Oussama Bouguerne',
+            url: 'http://example.com/how-to-become-a-web-dev'
+        }
+
+        const result = await api
+            .post('/api/blogs')
+            .send(newBlog)
+            .expect(201)
+            .expect('Content-Type', /application\/json/)
+
+        expect(result.body.likes).toBe(0)
+    })
+
 
     afterAll(() => {
         mongoose.connection.close('How to become a web developer in 2020')
