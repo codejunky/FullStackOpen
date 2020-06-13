@@ -83,11 +83,6 @@ describe('blogs api', () => {
         expect(blogs).toHaveLength(helper.initialBlogs.length)
     })
 
-
-    afterAll(() => {
-        mongoose.connection.close('How to become a web developer in 2020')
-    })
-
     test('blog can be deleted if a valid id is provided', async () => {
         const blogs = await helper.blogsInDB()
 
@@ -101,4 +96,23 @@ describe('blogs api', () => {
         const titles = blogsAfterDeletion.map(blog => blog.title)
         expect(titles).not.toContain(blogs[0].title)
     })
+
+    test('blog can be updated', async () => {
+        const blogs = await helper.blogsInDB()
+        const blogToUpdate = blogs[0]
+        blogToUpdate.likes = 10
+
+        const result = await api
+            .put(`/api/blogs/${blogToUpdate.id}`)
+            .send(blogToUpdate)
+            .expect(200)
+            .expect('Content-Type', /application\/json/)
+
+        expect(result.body.likes).toBe(10)
+    })
+
+    afterAll(() => {
+        mongoose.connection.close('How to become a web developer in 2020')
+    })
+
 })
