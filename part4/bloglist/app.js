@@ -2,13 +2,14 @@ const express = require('express')
 const mongoose = require('mongoose')
 const cors = require('cors')
 
+const config = require('./utils/config')
 const middleware = require('./utils/middleware')
 const logger = require('./utils/logger')
 const blogsRouter = require('./controllers/blogs')
 
 const app = express()
 
-const mongoUrl = 'mongodb+srv://fullstack:oussama50512006@cluster0-blow3.mongodb.net/bloglist?retryWrites=true&w=majority'
+const mongoUrl = config.MONGODB_URI
 mongoose.connect(mongoUrl, { useNewUrlParser: true, useUnifiedTopology: true })
     .then(() => {
         logger.info('connected to MongoDB')
