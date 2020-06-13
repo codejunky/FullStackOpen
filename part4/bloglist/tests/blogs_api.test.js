@@ -87,4 +87,18 @@ describe('blogs api', () => {
     afterAll(() => {
         mongoose.connection.close('How to become a web developer in 2020')
     })
+
+    test('blog can be deleted if a valid id is provided', async () => {
+        const blogs = await helper.blogsInDB()
+
+        await api
+            .delete(`/api/blogs/${blogs[0].id}`)
+            .expect(204)
+
+        const blogsAfterDeletion = await helper.blogsInDB()
+        expect(blogsAfterDeletion).toHaveLength(helper.initialBlogs.length - 1)
+
+        const titles = blogsAfterDeletion.map(blog => blog.title)
+        expect(titles).not.toContain(blogs[0].title)
+    })
 })
