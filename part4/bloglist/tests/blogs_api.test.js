@@ -44,7 +44,7 @@ describe('blogs api', () => {
             .expect('Content-Type', /application\/json/)
 
 
-        const blogs = await Blog.find({})
+        const blogs = await helper.blogsInDB()
         const titles = blogs.map(blog => blog.title)
 
         expect(blogs).toHaveLength(helper.initialBlogs.length + 1)
@@ -66,6 +66,21 @@ describe('blogs api', () => {
             .expect('Content-Type', /application\/json/)
 
         expect(result.body.likes).toBe(0)
+    })
+
+    test('blog without url and/or title is not added', async () => {
+        const newBlog = {
+            author: 'Oussama Bouguerne',
+            likes: 45
+        }
+
+        await api
+            .post('/api/blogs')
+            .send(newBlog)
+            .expect(400)
+
+        const blogs = await helper.blogsInDB()
+        expect(blogs).toHaveLength(helper.initialBlogs.length)
     })
 
 

@@ -1,4 +1,5 @@
 const blogsRouter = require('express').Router()
+require('express-async-errors')
 
 const Blog = require('../models/blog')
 
@@ -7,12 +8,13 @@ blogsRouter.get('/', async (request, response) => {
     response.json(blogs)
 })
 
-blogsRouter.post('/', async (request, response) => {
-    if (!request.body.likes) {
-        request.body.likes = 0
+blogsRouter.post('/', async ({ body }, response) => {
+    const { likes } = body
+    if (!likes) {
+        body.likes = 0
     }
 
-    const blog = new Blog(request.body)
+    const blog = new Blog(body)
 
     const result = await blog.save()
     response.status(201).json(result)
