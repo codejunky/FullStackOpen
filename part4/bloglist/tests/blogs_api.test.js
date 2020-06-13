@@ -29,8 +29,31 @@ describe('blogs api', () => {
         expect(res.body[0].id).toBeDefined()
     })
 
+    test('can create blog entry successfully', async () => {
+        const newBlog = {
+            title: 'How to become a web developer in 2020',
+            author: 'Oussama Bouguerne',
+            url: 'http://example.com/how-to-become-a-web-dev',
+            likes: 54
+        }
+
+        await api
+            .post('/api/blogs')
+            .send(newBlog)
+            .expect(201)
+            .expect('Content-Type', /application\/json/)
+
+
+        const blogs = await Blog.find({})
+        const titles = blogs.map(blog => blog.title)
+
+        expect(blogs).toHaveLength(helper.initialBlogs.length + 1)
+        expect(titles).toContain('How to become a web developer in 2020')
+
+    })
+
 
     afterAll(() => {
-        mongoose.connection.close()
+        mongoose.connection.close('How to become a web developer in 2020')
     })
 })
