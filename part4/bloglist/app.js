@@ -19,6 +19,8 @@ mongoose.connect(mongoUrl, { useNewUrlParser: true, useUnifiedTopology: true })
         logger.error('error connection to MongoDB:', error.message)
     })
 
+mongoose.set('useCreateIndex', true)
+
 app.use(express.static('build'))
 app.use(express.json())
 app.use(cors())
