@@ -5,14 +5,6 @@ require('express-async-errors')
 const Blog = require('../models/blog')
 const User = require('../models/user')
 
-const getTokenFrom = req => {
-    const authorization = req.get('authorization')
-    if (authorization && authorization.toLowerCase().startsWith('bearer ')) {
-        return authorization.substring(7)
-    }
-
-    return null
-}
 
 blogsRouter.get('/', async (request, response) => {
     const blogs = await Blog
@@ -23,13 +15,12 @@ blogsRouter.get('/', async (request, response) => {
 })
 
 blogsRouter.post('/', async (request, response) => {
-    const { body } = request
+    const { body, token } = request
     const { likes } = body
     if (!likes) {
         body.likes = 0
     }
 
-    const token = getTokenFrom(request)
     const decodedToken = jwt.verify(token, process.env.SECRET)
 
     if (!token || !decodedToken.id) {
