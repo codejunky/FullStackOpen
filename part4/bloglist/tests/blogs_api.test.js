@@ -1,19 +1,46 @@
 const supertest = require('supertest')
 const mongoose = require('mongoose')
+const bcrypt = require('bcrypt')
 
 const app = require('../app')
 const helper = require('./test_helper')
 const Blog = require('../models/blog')
+const User = require('../models/user')
+const { set } = require('../app')
 
 const api = supertest(app)
 
 describe('blogs api', () => {
+    let token
+
     beforeEach(async () => {
         await Blog.deleteMany({})
+        await User.deleteMany({})
 
-        const blogs = helper.initialBlogs.map(blog => new Blog(blog))
+        const passwordHash = await bcrypt.hash('secret', 10)
+        const user = new User({
+            username: 'ouss',
+            name: 'Oussama',
+            passwordHash
+        })
+
+        await user.save()
+
+        const blogs = helper.initialBlogs.map(blog => {
+            blog.user = user._id
+            return new Blog(blog)
+        })
         const promiseArr = blogs.map(blog => blog.save())
         await Promise.all(promiseArr)
+
+        const data = await api
+            .post('/api/login')
+            .send({
+                username: 'ouss',
+                password: 'secret123'
+            })
+
+        token = data.body.token
     })
 
     test('blogs are returned as json', async () => {
@@ -29,7 +56,7 @@ describe('blogs api', () => {
         expect(res.body[0].id).toBeDefined()
     })
 
-    test('can create blog entry successfully', async () => {
+    test('can create blog entry successfully if user logged in', async () => {
         const newBlog = {
             title: 'How to become a web developer in 2020',
             author: 'Oussama Bouguerne',
@@ -40,6 +67,7 @@ describe('blogs api', () => {
         await api
             .post('/api/blogs')
             .send(newBlog)
+            .set('Authorization', `Bearer ${token}`)
             .expect(201)
             .expect('Content-Type', /application\/json/)
 
@@ -52,6 +80,27 @@ describe('blogs api', () => {
 
     })
 
+    test('can not create new blog if auth token not provided', async () => {
+        const newBlog = {
+            title: 'How to become a web developer in 2020',
+            author: 'Oussama Bouguerne',
+            url: 'http://example.com/how-to-become-a-web-dev',
+            likes: 54
+        }
+
+        await api
+            .post('/api/blogs')
+            .send(newBlog)
+            .expect(401)
+            .expect('Content-Type', /application\/json/)
+
+
+        const blogs = await helper.blogsInDB()
+
+        expect(blogs).toHaveLength(helper.initialBlogs.length)
+
+    })
+
     test('number of likes is set to 0 if not provided', async () => {
         const newBlog = {
             title: 'How to become a web developer in 2020',
@@ -61,6 +110,7 @@ describe('blogs api', () => {
 
         const result = await api
             .post('/api/blogs')
+            .set('Authorization', `Bearer ${token}`)
             .send(newBlog)
             .expect(201)
             .expect('Content-Type', /application\/json/)
@@ -76,6 +126,7 @@ describe('blogs api', () => {
 
         await api
             .post('/api/blogs')
+            .set('Authorization', `Bearer ${token}`)
             .send(newBlog)
             .expect(400)
 
@@ -88,6 +139,7 @@ describe('blogs api', () => {
 
         await api
             .delete(`/api/blogs/${blogs[0].id}`)
+            .set('Authorization', `Bearer ${token}`)
             .expect(204)
 
         const blogsAfterDeletion = await helper.blogsInDB()
